@@ -1,4 +1,4 @@
-package projekat;
+package projekat.view;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;

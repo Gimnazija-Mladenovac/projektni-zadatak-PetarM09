@@ -1,8 +1,9 @@
-package projekat;
+package projekat.app;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import projekat.view.MainView;
 
 
 public class Main extends Application {
