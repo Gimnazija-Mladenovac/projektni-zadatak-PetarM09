@@ -1,4 +1,5 @@
 package projekat.model;
-
-public class Kategorija {
+public enum Kategorija {
+    nova,
+    polovna
 }

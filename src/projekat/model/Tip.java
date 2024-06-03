@@ -1,4 +1,7 @@
 package projekat.model;
 
-public class Tip {
+public enum Tip {
+    CD,
+    VINYL,
+    CD_VINYL
 }
