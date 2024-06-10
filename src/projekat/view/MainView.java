@@ -1,10 +1,20 @@
 package projekat.view;
 
+import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import projekat.model.Database;
+import projekat.model.Kategorija;
+import projekat.model.Numera;
+import projekat.model.Tip;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainView extends VBox {
     private ComboBox comboBox;
@@ -28,6 +38,7 @@ public class MainView extends VBox {
     private VBox vBox1;
     private HBox hBox4;
     private HBox hBox5;
+    private ToggleGroup toggleGroup;
 
     public MainView() {
         init();
@@ -35,20 +46,71 @@ public class MainView extends VBox {
     }
 
     private void init(){
-        comboBox = new ComboBox();
+
         vinyl = new RadioButton();
         cD = new RadioButton();
         vinylICD = new RadioButton();
-        cena = new ComboBox();
+        toggleGroup = new ToggleGroup();
+        vinyl.setToggleGroup(toggleGroup);
+        cD.setToggleGroup(toggleGroup);
+        vinylICD.setToggleGroup(toggleGroup);
+
+
+
         cenaTF = new TextField();
         prikaziSve = new Button("Prikazi sve");
         filtriraj = new Button("Filtriraj");
-        tableView = new TableView();
-        izaberi = new Button("Izaberi");
-        listView = new ListView();
-        ukupnoKosta = new TextField();
         kupi = new Button("Kupi");
         mojaKolekcija = new Button("Moja kolekcija");
+        izaberi = new Button("Izaberi");
+
+        cena = new ComboBox();
+        cena.getItems().addAll(
+                ">",
+                "<",
+                "="
+        );
+        cena.setValue(cena.getItems().get(0));
+        comboBox = new ComboBox(FXCollections.observableArrayList(Database.getInstance().getIzvodjaci()));
+        comboBox.setValue(comboBox.getItems().get(0));
+
+        List<Numera> sveNumere = new ArrayList<>();
+        for(var x : Database.getInstance().getNumere().entrySet())
+            sveNumere.add(x.getKey());
+
+        tableView = new TableView(FXCollections.observableList(sveNumere));
+
+        TableColumn<Numera, String> col1 = new TableColumn<>("Izvodjac");
+        TableColumn<Numera, String> col2 = new TableColumn<>("Naziv");
+        TableColumn<Numera, Integer> col3 = new TableColumn<>("Godina");
+        TableColumn<Numera, String> col4 = new TableColumn<>("Zanr");
+        TableColumn<Numera, Tip> col5 = new TableColumn<>("Tip");
+        TableColumn<Numera, Integer> col6 = new TableColumn<>("Komad");
+        TableColumn<Numera, Integer> col7 = new TableColumn<>("Cena");
+        TableColumn<Numera, Kategorija> col8 = new TableColumn<>("Kategorija");
+
+        col1.setCellValueFactory(new PropertyValueFactory<>("izvodjac"));
+        col2.setCellValueFactory(new PropertyValueFactory<>("naziv"));
+        col3.setCellValueFactory(new PropertyValueFactory<>("godina"));
+        col4.setCellValueFactory(new PropertyValueFactory<>("zanr"));
+        col5.setCellValueFactory(new PropertyValueFactory<>("tip"));
+        col6.setCellValueFactory(new PropertyValueFactory<>("komad"));
+        col7.setCellValueFactory(new PropertyValueFactory<>("cena"));
+        col8.setCellValueFactory(new PropertyValueFactory<>("kategorija"));
+
+        tableView.getColumns().addAll(
+                col1,col2,col3,col4,col5,col6,col7,col8
+        );
+
+        tableView.getSelectionModel().setSelectionMode(
+                SelectionMode.MULTIPLE
+        );
+
+
+
+        listView = new ListView();
+        ukupnoKosta = new TextField();
+
 
         hBox1 = new HBox();
         hBox2 = new HBox();
