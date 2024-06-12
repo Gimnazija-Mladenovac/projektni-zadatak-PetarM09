@@ -1,13 +1,18 @@
 package projekat.view;
 
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import projekat.model.Database;
 import projekat.model.Kategorija;
 import projekat.model.Numera;
@@ -15,71 +20,153 @@ import projekat.model.Tip;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Predicate;
 
 public class MainView extends VBox {
-    private ComboBox comboBox;
-    private RadioButton vinyl;
-    private RadioButton cD;
-    private RadioButton vinylICD;
-    private ComboBox cena;
-    private TextField cenaTF;
-    private Button prikaziSve;
-    private Button filtriraj;
-    private TableView tableView;
-    private ListView listView;
-    private Button izaberi;
-    private TextField ukupnoKosta;
-    private Button kupi;
-    private Button mojaKolekcija;
 
-    private HBox hBox1;
-    private HBox hBox2;
-    private HBox hBox3;
-    private VBox vBox1;
-    private HBox hBox4;
-    private HBox hBox5;
-    private ToggleGroup toggleGroup;
+    private Label izvodjacLbl;
+    private Label vinylLbl;
+    private Label cdLbl;
+    private Label obaLbl;
+    private Label cenaLbl;
+    private Label ukupnoLbl;
 
-    public MainView() {
+    private ComboBox<String> izvodjacCb;
+    private ComboBox<String> cenaCb;
+
+    private RadioButton vinylRb;
+    private RadioButton cdRb;
+    private RadioButton obaRb;
+
+    private Button prikaziSveBttn;
+    private Button filtrirajBttn;
+    private Button izaberiBttn;
+    private Button kupiBttn;
+    private Button mojaKolekcijaBttn;
+
+    private TextField filterTf;
+    private TextField ukupnoTf;
+
+    private TableView<Numera> tableView;
+    private ListView<Numera> listView;
+
+    private ObservableList<Numera> tableOl;
+    private ObservableList<Numera> selektovaneOl;
+
+    public MainView(){
         init();
-        initGUI();
+        pos();
+        actions();
+    }
+
+    private void actions(){
+
+        mojaKolekcijaBttn.setOnAction(e->{
+            Stage stage = new Stage();
+            Scene scene = new Scene(new SecondView());
+            stage.setScene(scene);
+            stage.show();
+        });
+        izaberiBttn.setOnAction(e->{
+            Alert a = new Alert(Alert.AlertType.NONE);
+            a.setContentText("Dugme izaberi");
+        });
+
+        kupiBttn.setOnAction(e->{
+            Alert a = new Alert(Alert.AlertType.NONE);
+            a.setContentText("Dugme kupi");
+        });
+
+        filtrirajBttn.setOnAction(e->{
+            Alert a = new Alert(Alert.AlertType.NONE);
+            a.setContentText("Dugme filtriraj");
+        });
+
+        prikaziSveBttn.setOnAction(e->{
+            Alert a = new Alert(Alert.AlertType.NONE);
+            a.setContentText("Dugme prikazi");
+        });
+    }
+
+    private void pos(){
+        HBox hbox1 = new HBox();
+        hbox1.setSpacing(10);
+        hbox1.setAlignment(Pos.CENTER);
+        hbox1.getChildren().addAll(
+                izvodjacLbl, izvodjacCb, vinylRb, vinylLbl, cdRb, cdLbl, obaRb, obaLbl
+        );
+
+        HBox hbox2 = new HBox();
+        hbox2.setSpacing(10);
+        hbox2.setAlignment(Pos.CENTER);
+        hbox2.getChildren().addAll(
+                cenaLbl, cenaCb, filterTf, prikaziSveBttn, filtrirajBttn
+        );
+
+        HBox hbox3 = new HBox();
+        hbox3.setSpacing(10);
+        hbox3.setAlignment(Pos.CENTER);
+        GridPane gp = new GridPane();
+        gp.addRow(0, ukupnoLbl, ukupnoTf);
+        gp.addRow(1, kupiBttn, mojaKolekcijaBttn);
+        gp.setHgap(8);
+        gp.setVgap(8);
+
+        hbox3.getChildren().addAll(
+                listView, gp
+        );
+
+        gp.setAlignment(Pos.CENTER);
+
+        this.getChildren().addAll(
+                hbox1, hbox2, tableView, izaberiBttn, hbox3
+        );
+        this.setAlignment(Pos.CENTER);
+        this.setPadding(new Insets(10));
+        this.setSpacing(15);
     }
 
     private void init(){
+        izvodjacLbl = new Label("Izvodjac");
+        vinylLbl = new Label("Vinyl");
+        cdLbl = new Label("CD");
+        obaLbl = new Label("Vinyl i CD");
+        cenaLbl = new Label("Cena");
+        ukupnoLbl = new Label("Ukupno kosta");
 
-        vinyl = new RadioButton();
-        cD = new RadioButton();
-        vinylICD = new RadioButton();
-        toggleGroup = new ToggleGroup();
-        vinyl.setToggleGroup(toggleGroup);
-        cD.setToggleGroup(toggleGroup);
-        vinylICD.setToggleGroup(toggleGroup);
-
-
-
-        cenaTF = new TextField();
-        prikaziSve = new Button("Prikazi sve");
-        filtriraj = new Button("Filtriraj");
-        kupi = new Button("Kupi");
-        mojaKolekcija = new Button("Moja kolekcija");
-        izaberi = new Button("Izaberi");
-
-        cena = new ComboBox();
-        cena.getItems().addAll(
+        izvodjacCb = new ComboBox<>(FXCollections.observableArrayList(Database.getInstance().getIzvodjaci()));
+        cenaCb = new ComboBox<>();
+        cenaCb.getItems().addAll(
+                "=",
                 ">",
-                "<",
-                "="
+                "<"
         );
-        cena.setValue(cena.getItems().get(0));
-        comboBox = new ComboBox(FXCollections.observableArrayList(Database.getInstance().getIzvodjaci()));
-        comboBox.setValue(comboBox.getItems().get(0));
+
+        ToggleGroup tg = new ToggleGroup();
+        vinylRb = new RadioButton();
+        cdRb = new RadioButton();
+        obaRb  = new RadioButton();
+
+        vinylRb.setToggleGroup(tg);
+        cdRb.setToggleGroup(tg);
+        obaRb.setToggleGroup(tg);
+
+        prikaziSveBttn = new Button("Prikazi sve");
+        filtrirajBttn = new Button("Filtriraj");
+        izaberiBttn = new Button("Izaberi");
+        kupiBttn = new Button("Kupi");
+        mojaKolekcijaBttn = new Button("Moja kolekcija");
+
+        filterTf = new TextField();
+        ukupnoTf = new TextField();
 
         List<Numera> sveNumere = new ArrayList<>();
-        for(var x : Database.getInstance().getNumere().entrySet())
-            sveNumere.add(x.getKey());
-
-        tableView = new TableView(FXCollections.observableList(sveNumere));
-
+        for(Map.Entry<Numera, Integer> entry : Database.getInstance().getNumere().entrySet()){
+            sveNumere.add(entry.getKey());
+        }
+        tableOl = FXCollections.observableList(sveNumere);
+        tableView = new TableView<>(tableOl);
         TableColumn<Numera, String> col1 = new TableColumn<>("Izvodjac");
         TableColumn<Numera, String> col2 = new TableColumn<>("Naziv");
         TableColumn<Numera, Integer> col3 = new TableColumn<>("Godina");
@@ -99,56 +186,16 @@ public class MainView extends VBox {
         col8.setCellValueFactory(new PropertyValueFactory<>("kategorija"));
 
         tableView.getColumns().addAll(
-                col1,col2,col3,col4,col5,col6,col7,col8
+                col1, col2, col3, col4, col5, col6, col7, col8
         );
 
-        tableView.getSelectionModel().setSelectionMode(
-                SelectionMode.MULTIPLE
-        );
+        tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
+        selektovaneOl = FXCollections.observableArrayList();
+        listView = new ListView<>(selektovaneOl);
 
-
-        listView = new ListView();
-        ukupnoKosta = new TextField();
-
-
-        hBox1 = new HBox();
-        hBox2 = new HBox();
-        hBox3 = new HBox();
-        hBox4 = new HBox();
-        hBox5 = new HBox();
-        vBox1 = new VBox();
-    }
-
-    private void initGUI(){
-        hBox1.getChildren().addAll(new Label("Izvodjac"), comboBox, vinyl, new Label("Vinyl"), cD, new Label("CD"),  vinylICD, new Label("vinyl i CD"));
-        hBox1.setAlignment(Pos.CENTER);
-        hBox1.setPadding(new Insets(15,15,15,15));
-        hBox1.setSpacing(15);
-
-        hBox2.getChildren().addAll(new Label("Cena"), cena, cenaTF, prikaziSve, filtriraj);
-        hBox2.setPadding(new Insets(15));
-        hBox2.setSpacing(30);
-        hBox2.setAlignment(Pos.CENTER);
-
-        hBox3.getChildren().addAll(new Label("Ukupno kosta: "), ukupnoKosta);
-        hBox3.setSpacing(15);
-        hBox3.setAlignment(Pos.CENTER);
-
-        hBox4.getChildren().addAll(kupi, mojaKolekcija);
-        hBox4.setSpacing(75);
-
-        vBox1.getChildren().addAll(hBox3, hBox4);
-        vBox1.setAlignment(Pos.CENTER);
-        vBox1.setSpacing(20);
-
-        hBox5.getChildren().addAll(listView, vBox1);
-        hBox5.setAlignment(Pos.CENTER);
-        hBox5.setSpacing(50);
-
-        this.getChildren().addAll(hBox1, hBox2,tableView, izaberi,hBox5);
-        this.setSpacing(15);
-        this.setPadding(new Insets(15,15,15,15));
-        this.setAlignment(Pos.CENTER);
+        // default values
+        cenaCb.setValue(cenaCb.getItems().get(0));
+        izvodjacCb.setValue(izvodjacCb.getItems().get(0));
     }
 }
