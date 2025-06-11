@@ -8,7 +8,7 @@ import java.util.*;
 
 public class Database {
 
-    private static Database instance;
+    private static Database instance;  //SINGELTON
 
     private Map<Numera, Integer> numere;
     private Set<String> izvodjaci;
@@ -16,13 +16,13 @@ public class Database {
 
     private List<Kombinacija> mojaKolekcija;
 
-    public static Database getInstance() {
+    public static Database getInstance() {  //SINGELTON
         if(instance == null)
             instance = new Database();
         return instance;
     }
 
-    private Database(){
+    private Database(){    //SINGELTON (privatni konstruktor bez argumenata)
         this.izvodjaci = new HashSet<>();
         this.numere = new HashMap();
         this.zanrovi = new HashSet<>();
@@ -49,15 +49,15 @@ public class Database {
         }
     }
 
-    private void ucitaj(){
+    private void ucitaj(){ // METODA ZA CITANJE FAJLOVA
         File file = new File("katalog.txt");
 
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(file));
+            BufferedReader reader = new BufferedReader(new FileReader(file)); //SPREMANJE CITACA ZA CITANJE RED PO RED
             String linija;
             String aktuelniZanr = "";
-            while((linija = reader.readLine()) != null){
-                String split[] = linija.split(",");
+            while((linija = reader.readLine()) != null){  //CITANJE RED PO RED
+                String split[] = linija.split(",");  //DELJENJE REDA NA VISE DELOVA U ODNOSJU NA ZAREZ
                 if(split.length == 1){
                     aktuelniZanr = linija;
                     continue;
